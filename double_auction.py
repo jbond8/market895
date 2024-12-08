@@ -256,7 +256,7 @@ if __name__ == "__main__":
         da.order((buyer_1.name, "bid", 135))
         da.order((seller_1.name, "ask", 130))
    
-    buyer_1 = buyer.Buyer('Buyer 1', [75, 100, 150])
+    buyer_1 = buyer.ZI_Buyer('Buyer 1', [75, 100, 150])
     seller_1 = seller.Seller('Seller 1', [10, 20, 30])
     da = DoubleAuction('Orange Market')
     
@@ -267,6 +267,3 @@ if __name__ == "__main__":
     sample_da_order_flow(da)
     da.book.print_book()
     print(da.contracts)
-
-    
-

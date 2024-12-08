@@ -36,7 +36,7 @@ class MarketEnvironment:
         low and high from a Uniform distribution.
         units = number of reservation values to be generated.
         """
-        new_buyer = buyer.Buyer(name, [0])
+        new_buyer = buyer.ZI_Buyer(name, [0])
         new_buyer.reservation_values = \
             new_buyer.values.build_reservation_values(units, low, high)
         self.add_buyer(new_buyer)

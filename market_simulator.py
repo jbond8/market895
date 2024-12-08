@@ -101,7 +101,7 @@ class MarketSim():
             standing_bid = self.da.book.standing['bid']
             standing_ask = self.da.book.standing['ask']
             if trader.type == "B": 
-                bid = trader.bid(standing_bid)
+                bid = trader.bid(standing_bid, standing_ask, round, num_rounds)
                 #print(f"standing bid = {standing_bid}, bid = {bid}")
                 if bid != None: self.da.order(bid)
             if trader.type == "S": 
@@ -118,6 +118,35 @@ class MarketSim():
         eq_units, eq_price_low, eq_price_high, max_surplus = self.env.get_equilibrium()
         actual_surplus, efficiency = self.calc_efficiency(traders, max_surplus)
         print(f"actual surplus = {actual_surplus}, efficiency = {efficiency}") 
+
+    def sim_period_silent(self, num_rounds):
+        # Register buyers and sellers
+        for buyer in self.env.buyers:
+            self.da.register(buyer)
+        for seller in self.env.sellers:
+            self.da.register(seller)
+
+        # run simulation
+        traders = []
+        traders.extend(self.env.buyers)
+        traders.extend(self.env.sellers)
+
+        for round in range(0, num_rounds):
+            trader = rnd.choice(traders)
+            standing_bid = self.da.book.standing['bid']
+            standing_ask = self.da.book.standing['ask']
+            if trader.type == "B": 
+                bid = trader.bid(standing_bid)
+                #print(f"standing bid = {standing_bid}, bid = {bid}")
+                if bid != None: self.da.order(bid)
+            if trader.type == "S": 
+                ask = trader.ask(standing_ask)
+                #print(f"standing ask = {standing_ask}, ask = {ask}")
+                if ask != None: self.da.order(ask)
+        
+        eq_units, eq_price_low, eq_price_high, max_surplus = self.env.get_equilibrium()
+        actual_surplus, efficiency = self.calc_efficiency(traders, max_surplus)
+        return actual_surplus, efficiency, eq_units, eq_price_low, eq_price_high
               
 if __name__ == "__main__":
     sim = MarketSim("sim_1", "Orange Market")

@@ -5,8 +5,8 @@ from typing import List
 from operator import itemgetter
 import random as rnd
 
-import buyer
-import seller
+import Buyer.buyer as buyer
+import Seller.seller as seller
 
 
 @dataclass

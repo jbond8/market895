@@ -1,6 +1,6 @@
 import scipy.ndimage
 import scipy.stats
-import market_simulator as msim
+import Simulator.market_simulator as msim
 from dataclasses import dataclass
 import scipy
 import numpy as np

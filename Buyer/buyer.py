@@ -68,7 +68,7 @@ class ZI_Buyer:
     def __repr__(self):
         return f"{self.type}--{self.name} {self.values.reservation_values} current unit = {self.values.current_unit}"
     
-    def bid(self, standing_bid, standing_ask):
+    def bid(self, standing_bid, standing_ask, num_round, total_rounds):
         """ make a random bid between the standing_bid and current reservation value
             bid = (name, "bid", amount)"""
         

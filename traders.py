@@ -1,5 +1,5 @@
-import market_simulator as msim
-import buyer
+import Simulator.market_simulator as msim
+import Buyer.buyer as buyer
 
 class Kaplan:
     def __init__(self):

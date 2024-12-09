@@ -1,13 +1,13 @@
 # ECON 895 - Project II
 
 ## Overview
-`market_sim_api.py`: Sets up the Tkinter GUI for the user to interact with.
-`tournament.py`: Runs the tournament for a number of rounds determined by the user.
-`market_simulator_v2.py`: Runs an independent simulation for selected traders by user.
-`spot_market_environment.py`: Contains functions to develop market participants, the demand curve, the supply curve, and calculates competitive equilibrium.
-`double_auction.py`: Develops and runs an order book of bidding, selling, and contracts between market participants.
-`buyer.py`: Contains buyer bidding strategies.
-`seller.py`: Contains seller selling strategies.
+`market_sim_api.py`: Sets up the Tkinter GUI for the user to interact with.  
+`tournament.py`: Runs the tournament for a number of rounds determined by the user.  
+`market_simulator_v2.py`: Runs an independent simulation for selected traders by user.  
+`spot_market_environment.py`: Contains functions to develop market participants, the demand curve, the supply curve, and calculates competitive equilibrium.  
+`double_auction.py`: Develops and runs an order book of bidding, selling, and contracts between market participants.  
+`buyer.py`: Contains buyer bidding strategies.  
+`seller.py`: Contains seller selling strategies.  
 
 ## Tkinter GUI
 The Tkinter GUI is set up to allow a user to first select whether they would like to load a TOML configuration file or use a dropdown menu to select the strategies for each buyer and seller the user adds.

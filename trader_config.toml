@@ -1,0 +1,36 @@
+title = "MarketSim Config"
+message = "File Loaded"
+num_buyers = 2
+num_sellers = 2
+
+[B1]
+name = "B1"
+type = "B"
+num_units = 3
+min_value = 200
+max_value = 400
+trader_type = "Zero Intelligence"
+
+[S1]
+name = "S1"
+type = "S"
+num_units = 3
+min_value = 100
+max_value = 300
+trader_type = "Zero Intelligence"
+
+[B2]
+name = "B2"
+type = "B"
+num_units = 3
+min_value = 200
+max_value = 400
+trader_type = "Kaplan"
+
+[S2]
+name = "S2"
+type = "S"
+num_units = 3
+min_value = 100
+max_value = 300
+trader_type = "Zero Intelligence"

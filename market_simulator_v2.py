@@ -61,7 +61,6 @@ class MarketSim():
     def load_config(self, file_path):
         """Load configuration from the specified TOML file."""
         try:
-            print(f"self: {self}")
             self.da.contracts = []
             self.env.reset(self.market_name)
 
@@ -183,7 +182,7 @@ class MarketSim():
                 #print(f"standing bid = {standing_bid}, bid = {bid}")
                 if bid != None: self.da.order(bid)
             if trader.type == "S": 
-                ask = trader.ask(standing_ask)
+                ask = trader.ask(standing_bid, standing_ask, round, num_rounds)
                 #print(f"standing ask = {standing_ask}, ask = {ask}")
                 if ask != None: self.da.order(ask)
         print()
@@ -224,8 +223,41 @@ class MarketSim():
         
         eq_units, eq_price_low, eq_price_high, max_surplus = self.env.get_equilibrium()
         actual_surplus, efficiency = self.calc_efficiency(traders, max_surplus)
-        return actual_surplus, efficiency, eq_units, eq_price_low, eq_price_high
-              
+        individual_surplus = self.sim_trader_surplus(traders)
+        return actual_surplus, efficiency, eq_units, eq_price_low, eq_price_high, individual_surplus
+
+    def sim_trader_surplus(self, trader_list):
+        # dictionary to store individual surpluses
+        individual_surplus = {}
+
+        # loop through all traders
+        for trader in trader_list:
+            trader_surplus = 0
+            unit = 0
+            if trader.type == "B":
+                res = trader.values.reservation_values
+            else:
+                res = trader.costs.unit_costs
+            
+            for contract in self.da.contracts:
+                price, buyer_name, seller_name = contract
+                if trader.type == "B":
+                    if trader.name == buyer_name:
+                        surplus = res[unit] - price
+                        unit += 1
+                        trader_surplus += surplus  # total buyer surplus
+                else:
+                    if trader.name == seller_name:
+                        surplus = price - res[unit]
+                        unit += 1
+                        trader_surplus += surplus  # total seller surplus
+
+            # store the trader's individual surplus in the dictionary
+            individual_surplus[trader.name] = trader_surplus
+
+        # optionally return the dictionary
+        return individual_surplus
+
 if __name__ == "__main__":
     sim = MarketSim()
     sim.build_example_market()

@@ -84,7 +84,7 @@ class ZI_Seller:
             self.contracts.append(price)
             self.costs.current_unit += 1
 
-class Kaplan:
+class Kaplan_Seller:
     """
     A Buyer who can bid in a Double Auction Spot Market.
     Modeled after Kaplan's bidding strategy in Rust et al. (1994)
@@ -99,42 +99,163 @@ class Kaplan:
     def __repr__(self):
         return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
         
-    def bid(self, standing_bid, standing_ask, num_round, total_rounds):
+    def ask(self, standing_bid, standing_ask, num_round, total_rounds):
         """
         Kaplan's bidding strategy as outline in Rust et al. (1994) p. 73
         """
+        try:
+            next_token = self.costs.unit_costs[self.costs.current_unit + 1]
+        except IndexError:
+            next_token = self.costs.current
+
         if self.costs.current == None:
             return None
         if standing_ask:
             if standing_bid:
-                most = max(standing_bid, self.costs.current)
-                if most > standing_bid:
-                    if standing_ask <= 999 and ((self.values.current - standing_bid)/self.values.current) > 0.02 and (standing_ask - standing_bid) < (0.1 * standing_ask):
-                        return self.name, "bid", min(standing_ask, most)
-                    elif standing_ask <= 0:
-                        return self.name, "bid", min(standing_ask, most)
-                    elif (1 - (num_round / total_rounds)) <= 0.8:
-                        return self.name, "bid", min(standing_ask, most)
+                least = max(standing_bid, next_token + 1)
+                if least < standing_ask:
+                    if standing_bid >= 999 and ((standing_ask - self.costs.current)/self.costs.current) > 0.02 and (standing_ask - standing_bid) < (0.1 * standing_bid):
+                        return self.name, "ask", max(standing_bid, least)
+                    elif standing_bid >= 0:
+                        return self.name, "ask", max(standing_bid, least)
+                    elif (1 - (num_round / total_rounds)) <= 0.2:
+                        return self.name, "ask", max(standing_bid, least)
                     else:
                         return None
                 else:
                     return None
             else:
-                most = self.values.current
-                if most > standing_bid:
-                    if standing_ask <= 999 and ((self.values.current - standing_bid)/self.values.current) > 0.02 and (standing_ask - standing_bid) < (0.1 * standing_ask):
-                        return self.name, "bid", min(standing_ask, most)
-                    elif standing_ask <= 0:
-                        return self.name, "bid", min(standing_ask, most)
-                    elif (1 - (num_round / total_rounds)) <= 0.8:
-                        return self.name, "bid", min(standing_ask, most)
+                least = next_token + 1
+                if least < standing_ask:
+                    if standing_bid >= 999 and ((standing_ask - self.costs.current)/self.costs.current) > 0.02 and (standing_ask - standing_bid) < (0.1 * standing_bid):
+                        return self.name, "ask", max(standing_bid, least)
+                    elif standing_bid >= 0:
+                        return self.name, "ask", max(standing_bid, least)
+                    elif (1 - (num_round / total_rounds)) <= 0.2:
+                        return self.name, "ask", max(standing_bid, least)
                     else:
                         return None
                 else:
                     return None
         else:
-            return self.name, "bid", 1
+            return self.name, "ask", 1
+        
+    def contract(self, price, your_contract):
+        """
+        Seller becomes informed about contract prices from Double Auction.
+        Seller must be registered with Double Auction to get price information.
+        If your_contract == True seller learns they have a contract at price.
+        If your_contract == True seller updates their current_unit.
+        """
+        self.prices.append(price)
+        if your_contract:
+            self.contracts.append(price)
+            self.costs.current_unit += 1
 
+class Ringuette_Seller:
+    """
+    A Buyer who can bid in a Double Auction Spot Market.
+    Modeled after Ringuette's bidding strategy in Rust et al. (1994)
+    """
+    def __init__(self, name, unit_costs):
+        self.name = name
+        self.type = 'S'
+        self.costs = UnitCosts(name, unit_costs)
+        self.prices = []
+        self.contracts = []
+
+    def __repr__(self):
+        return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
+        
+    def ask(self, standing_bid, standing_ask, num_round, total_rounds):
+        """ 
+        """
+        try:
+            next_token = self.costs.unit_costs[self.costs.current_unit + 1]
+        except IndexError:
+            next_token = self.costs.current
+        
+        if (1 - (num_round / total_rounds)) <= 0.2:
+            zi = ZI_Seller(self.name, self.costs.unit_costs)
+            zi.ask(standing_bid, standing_ask, num_round, total_rounds)
+        else:
+            span = (self.costs.unit_costs[-1] - self.costs.unit_costs[0] + 10)
+            if standing_ask < (total_rounds/4):
+                return self.name, "ask", standing_ask + 1
+            else:
+                if standing_bid:
+                    if (standing_bid - standing_ask) > (span/5) and next_token > (standing_bid + (span/5)):
+                        return self.name, "ask", standing_bid + 1 + (0.05 * rnd.uniform(0,1) * span)
+                    else:
+                        return None
+                else:
+                    return None
+
+    def contract(self, price, your_contract):
+        """
+        Buyer becomes informed about contract prices from Double Auction.
+        Buyer must be registered with Double Auction to get price information.
+        If your_contract == True buyer learns they have a contract at price.
+        If your_contract == True buyer updates their current_unit.
+        """
+        self.prices.append(price)
+        if your_contract:
+            self.contracts.append(price)
+            self.costs.current_unit += 1
+
+class PS_Seller:
+    """
+    A Buyer who can bid in a Double Auction Spot Market.
+    Modeled after the 'Persistent Shout' bidding strategy in Priest & Tol (2003)
+    """
+    def __init__(self, name, unit_costs):
+        self.name = name
+        self.type = 'S'
+        self.costs = UnitCosts(name, unit_costs)
+        self.prices = []
+        self.contracts = []
+
+    def __repr__(self):
+        return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
+    
+    def ask(self, standing_bid, standing_ask, num_round, total_rounds):
+        """ 
+        """
+        r_1 = rnd.uniform(0,0.2)
+        r_2 = rnd.uniform(0,0.2)
+        gamma = 0.3
+        beta = 0.05
+
+        if standing_ask > standing_bid:
+            delta = r_1 * standing_ask + r_2
+            target = standing_bid - delta
+            
+            potential_ask = gamma * self.costs.current + (1 - gamma) * beta * (target - self.costs.current)
+            if potential_ask >= self.costs.current:
+                return self.name, "ask", potential_ask
+            else:
+                return None
+        elif standing_ask <= standing_bid:
+            delta = r_1 * standing_bid + r_2
+            target = standing_ask + delta
+
+            potential_ask = gamma * self.costs.current + (1 - gamma) * beta * (target - self.costs.current)
+            if potential_ask >= self.costs.current:
+                return self.name, "ask", potential_ask
+            else:
+                return None
+
+    def contract(self, price, your_contract):
+        """
+        Buyer becomes informed about contract prices from Double Auction.
+        Buyer must be registered with Double Auction to get price information.
+        If your_contract == True buyer learns they have a contract at price.
+        If your_contract == True buyer updates their current_unit.
+        """
+        self.prices.append(price)
+        if your_contract:
+            self.contracts.append(price)
+            self.costs.current_unit += 1
 
 if __name__ == "__main__":
     print()

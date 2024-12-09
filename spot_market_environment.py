@@ -36,10 +36,14 @@ class MarketEnvironment:
         low and high from a Uniform distribution.
         units = number of reservation values to be generated.
         """
-        if trader_type == 'Zero':
+        if trader_type == 'Zero Intelligence':
             new_buyer = buyer.ZI_Buyer(name, [0])
         elif trader_type == 'Kaplan':
-            new_buyer = buyer.Kaplan(name, [0])
+            new_buyer = buyer.Kaplan_Buyer(name, [0])
+        elif trader_type == 'Ringuette':
+            new_buyer = buyer.Ringuette_Buyer(name, [0])
+        elif trader_type == "Persistent Shout":
+            new_buyer = buyer.PS_Buyer(name, [0])
         new_buyer.reservation_values = \
             new_buyer.values.build_reservation_values(units, low, high)
         self.add_buyer(new_buyer)
@@ -50,10 +54,14 @@ class MarketEnvironment:
         low and high from a Uniform distribution.
         units = number of unit_costs to be generated.
         """
-        if trader_type == 'Zero':
+        if trader_type == 'Zero Intelligence':
             new_seller = seller.ZI_Seller(name, [0])
         elif trader_type == 'Kaplan':
-            new_seller = seller.Kaplan(name, [0])
+            new_seller = seller.Kaplan_Seller(name, [0])
+        elif trader_type == 'Ringuette':
+            new_seller = seller.Ringuette_Seller(name, [0])
+        elif trader_type == "Persistent Shout":
+            new_seller = seller.PS_Seller(name, [0])
         new_seller.unit_costs = new_seller.costs.build_unit_costs(units, low, high)
         self.add_seller(new_seller)
             
@@ -225,7 +233,10 @@ class MarketEnvironment:
         print()
 
     def get_equilibrium(self):
-        return self.eq_units, self.eq_price_low, self.eq_price_high, self.max_surplus
+        try:
+            return self.eq_units, self.eq_price_low, self.eq_price_high, self.max_surplus
+        except (AttributeError, TypeError):
+            pass
 
 
 if __name__ == "__main__":

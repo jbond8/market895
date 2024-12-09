@@ -1,4 +1,4 @@
-title = "MarketSim Config"
+title = "Test Config for MarketSim"
 message = "File Loaded"
 num_buyers = 5
 num_sellers = 5
@@ -11,14 +11,6 @@ min_value = 200
 max_value = 400
 trader_type = "Zero Intelligence"
 
-[S1]
-name = "S1"
-type = "S"
-num_units = 3
-min_value = 100
-max_value = 300
-trader_type = "Zero Intelligence"
-
 [B2]
 name = "B2"
 type = "B"
@@ -26,6 +18,38 @@ num_units = 3
 min_value = 200
 max_value = 400
 trader_type = "Kaplan"
+
+[B3]
+name = "B3"
+type = "B"
+num_units = 3
+min_value = 200
+max_value = 400
+trader_type = "Persistent Shout"
+
+[B4]
+name = "B4"
+type = "B"
+num_units = 3
+min_value = 200
+max_value = 400
+trader_type = "Skeleton"
+
+[B5]
+name = "B5"
+type = "B"
+num_units = 3
+min_value = 200
+max_value = 400
+trader_type = "Ringuette"
+
+[S1]
+name = "S1"
+type = "S"
+num_units = 3
+min_value = 100
+max_value = 300
+trader_type = "Zero Intelligence"
 
 [S2]
 name = "S2"
@@ -35,28 +59,12 @@ min_value = 100
 max_value = 300
 trader_type = "Kaplan"
 
-[B3]
-name = "B3"
-type = "B"
-num_units = 3
-min_value = 200
-max_value = 400
-trader_type = "Ringuette"
-
 [S3]
 name = "S3"
 type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Ringuette"
-
-[B4]
-name = "B4"
-type = "B"
-num_units = 3
-min_value = 200
-max_value = 400
 trader_type = "Persistent Shout"
 
 [S4]
@@ -65,14 +73,6 @@ type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Persistent Shout"
-
-[B5]
-name = "B5"
-type = "B"
-num_units = 3
-min_value = 200
-max_value = 400
 trader_type = "Skeleton"
 
 [S5]
@@ -81,4 +81,4 @@ type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Skeleton"
+trader_type = "Ringuette"

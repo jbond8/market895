@@ -245,11 +245,15 @@ class MarketEnvironment:
                 break
         
         #  Now caluclate equilibrium price range
-        if self.eq_units > 1:
+        if self.eq_units >= 1:
             self.eq_price_high = min(last_accepted_value, first_rejected_cost)
             self.eq_price_low = max(last_accepted_cost, first_rejected_value)
         else:
             print("No Equilibrium")
+            self.eq_price_high = None
+            self.eq_price_low = None
+            self.eq_units = 0
+            self.max_surplus = 0
 
     def show_equilibrium(self):
         """

@@ -68,7 +68,7 @@ class ZI_Seller:
 
         #print(f"current_cost = {self.costs.current}, standing_ask = {standing_ask}")
         if self.costs.current != None and self.costs.current < standing_ask:
-            return self.name, "ask", rnd.randint(self.costs.current, standing_ask)
+            return self.name, "ask", rnd.uniform(self.costs.current, standing_ask)
         else:
             return None
 
@@ -176,16 +176,16 @@ class Ringuette_Seller:
             next_token = self.costs.current
         
         if (1 - (num_round / total_rounds)) <= 0.2:
-            zi = ZI_Seller(self.name, self.costs.unit_costs)
-            zi.ask(standing_bid, standing_ask, num_round, total_rounds)
+            skeleton = Skeleton_Seller(self.name, self.costs.unit_costs)
+            skeleton.ask(standing_bid, standing_ask, num_round, total_rounds)
         else:
             span = (self.costs.unit_costs[-1] - self.costs.unit_costs[0] + 10)
-            if standing_ask < (total_rounds/4):
-                return self.name, "ask", standing_ask + 1
+            if standing_ask > (total_rounds/4):
+                return self.name, "ask", standing_ask - 1
             else:
                 if standing_bid:
-                    if (standing_bid - standing_ask) > (span/5) and next_token > (standing_bid + (span/5)):
-                        return self.name, "ask", standing_bid + 1 + (0.05 * rnd.uniform(0,1) * span)
+                    if (standing_ask - standing_bid) > (span/5) and next_token < (standing_bid - (span/5)):
+                        return self.name, "ask", standing_bid - 1 - (0.05 * rnd.uniform(0,1) * span)
                     else:
                         return None
                 else:

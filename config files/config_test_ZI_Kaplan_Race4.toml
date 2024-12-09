@@ -1,7 +1,7 @@
 title = "Test Config for MarketSim"
 message = "File Loaded"
-num_buyers = 4
-num_sellers = 4
+num_buyers = 5
+num_sellers = 5
 
 [B1]
 name = "B1"
@@ -9,7 +9,7 @@ type = "B"
 num_units = 3
 min_value = 200
 max_value = 400
-trader_type = "Zero Intelligence"
+trader_type = "Kaplan"
 
 [B2]
 name = "B2"
@@ -17,7 +17,7 @@ type = "B"
 num_units = 3
 min_value = 200
 max_value = 400
-trader_type = "Zero Intelligence"
+trader_type = "Kaplan"
 
 [B3]
 name = "B3"
@@ -25,7 +25,7 @@ type = "B"
 num_units = 3
 min_value = 200
 max_value = 400
-trader_type = "Zero Intelligence"
+trader_type = "Kaplan"
 
 [B4]
 name = "B4"
@@ -33,7 +33,15 @@ type = "B"
 num_units = 3
 min_value = 200
 max_value = 400
-trader_type = "Zero Intelligence"
+trader_type = "Kaplan"
+
+[B5]
+name = "B5"
+type = "B"
+num_units = 3
+min_value = 200
+max_value = 400
+trader_type = "Kaplan"
 
 [S1]
 name = "S1"
@@ -41,7 +49,7 @@ type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Zero Intelligence"
+trader_type = "Kaplan"
 
 [S2]
 name = "S2"
@@ -49,7 +57,7 @@ type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Zero Intelligence"
+trader_type = "Kaplan"
 
 [S3]
 name = "S3"
@@ -57,7 +65,7 @@ type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Zero Intelligence"
+trader_type = "Kaplan"
 
 [S4]
 name = "S4"
@@ -65,4 +73,12 @@ type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Zero Intelligence"
+trader_type = "Kaplan"
+
+[S5]
+name = "S5"
+type = "S"
+num_units = 3
+min_value = 100
+max_value = 300
+trader_type = "Kaplan"

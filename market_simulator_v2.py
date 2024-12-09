@@ -195,10 +195,14 @@ class MarketSim():
                         buyer_surplus = buyer_surplus + surplus
                 else:
                     if trader.name == seller_name:
-                        surplus = price - res[unit]
-                        unit = unit + 1
-                        trader_surplus = trader_surplus + surplus
-                        seller_surplus = seller_surplus + surplus
+                        try: 
+                            surplus = price - res[unit]
+                            unit = unit + 1
+                            trader_surplus = trader_surplus + surplus
+                            seller_surplus = seller_surplus + surplus
+                        except IndexError:
+                            pass
+                        
                                 
         actual_surplus = buyer_surplus + seller_surplus
         efficiency = (actual_surplus/max_surplus)*100.0
@@ -316,9 +320,12 @@ class MarketSim():
                         trader_surplus += surplus  # total buyer surplus
                 else:
                     if trader.name == seller_name:
-                        surplus = price - res[unit]
-                        unit += 1
-                        trader_surplus += surplus  # total seller surplus
+                        try: 
+                            surplus = price - res[unit]
+                            unit += 1
+                            trader_surplus += surplus
+                        except IndexError:
+                            pass
 
             # store the trader's individual surplus in the dictionary
             individual_surplus[trader.name] = trader_surplus

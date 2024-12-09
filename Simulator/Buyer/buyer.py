@@ -184,13 +184,13 @@ class Ringuette_Buyer:
             next_token = self.values.current
 
         if (1 - (num_round / total_rounds)) <= 0.1:
-            zi = ZI_Buyer(self.name, self.values.reservation_values)
-            zi.bid(standing_bid, standing_ask, num_round, total_rounds)
+            skeleton = Skeleton_Buyer(self.name, self.values.reservation_values)
+            skeleton.bid(standing_bid, standing_ask, num_round, total_rounds)
         else:
-            span = (self.values.reservation_values[-1] - self.values.reservation_values[0] + 10)
+            span = (self.values.reservation_values[0] - self.values.reservation_values[-1] + 10)
             if standing_bid < (total_rounds/4):
                 return self.name, "bid", standing_bid + 1
-            else:
+            elif standing_bid > (total_rounds/4):
                 if standing_ask:
                     if (standing_bid - standing_ask) > (span/5) and (next_token) > (standing_ask + (span/5)):
                         return self.name, "bid", standing_ask + 1 + (0.05 * rnd.uniform(0,1) * span)
@@ -229,6 +229,14 @@ class PS_Buyer:
     def bid(self, standing_bid, standing_ask, num_round, total_rounds):
         """ 
         """
+        try:
+            next_token = self.values.reservation_values[self.values.current_unit + 1]
+        except IndexError:
+            next_token = self.values.current
+        
+        if self.values.current == None:
+            return None
+
         r_1 = rnd.uniform(0,0.2)
         r_2 = rnd.uniform(0,0.2)
         gamma = 0.5

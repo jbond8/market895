@@ -88,7 +88,3 @@ class Tournament:
         plt.xlabel('Value')
         plt.ylabel('Frequency')
         plt.show()
-
-if __name__ == "__main__":
-    sim = Tournament("tournament_name", 10000, 100)
-    sim.eval_tournament()

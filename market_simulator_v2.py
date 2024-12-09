@@ -11,7 +11,9 @@ import double_auction as institution
 import spot_market_environment as environment
 
 class MarketSim():
-    """ run market Simulations """
+    """
+    Runs Market Simulations
+    """
     def __init__(self, sim_name = "temp_sim_name", 
                        market_name  ="temp_market_name"):
         self.sim_name = sim_name
@@ -21,16 +23,39 @@ class MarketSim():
         self.da = institution.DoubleAuction(self.market_name)
     
     def build_a_buyer(self, name, trader_type, num_units, low_v, high_v):
+        """
+        Carries inputs provided to environment module to build a buyer.
+        args:
+            name, name of buyer.
+            trader_type, type of bidding strategy.
+            num_units, number of reservation values to be generated.
+            low_v, lowest possible valuation.
+            high_v, highest possible valuation
+        """
         self.env.build_buyer(name, trader_type, num_units, low_v, high_v)
 
     def build_a_seller(self, name, trader_type, num_units, low_c, high_c):
+        """
+        Carries inputs provided to environment module to build a seller.
+        args:
+            name, name of seller.
+            trader_type, type of selling strategy.
+            num_units, number of unit cost values to be generated.
+            low_c, lowest possible cost.
+            high_c, highest possible cost
+        """
         self.env.build_seller(name, trader_type, num_units, low_c, high_c)
 
     def reset_market(self):
+        """
+        Resets lists of buyers, sellers, demand, and supply.
+        """
         self.env.reset(self.market_name)
 
     def build_example_market(self):
-        """Parameters can be read from config file"""
+        """
+        An example of the parameters that can be read from a config file
+        """
         self.env.reset(self.market_name)
         
         # build buyers and sellers
@@ -49,17 +74,29 @@ class MarketSim():
         self.env.calc_equilibrium()
 
     def calc_market(self):
+        """
+        Creates a demand curve, supply curve, and finds the resulting equilibrium price and quantity of the two curves.
+        """
         self.env.make_demand()
         self.env.make_supply()
         self.env.calc_equilibrium()
 
     def show_market(self):
+        """
+        Neatly prints out the participants in the simulation, plots the supply and demand curves, and neatly prints out the equilibrium price and quantity, and maximum surplus.
+        """
         self.env.show_participants()
         self.env.plot_supply_demand()
         self.env.show_equilibrium()
 
     def load_config(self, file_path):
-        """Load configuration from the specified TOML file."""
+        """
+        Loads configuration from the specified TOML file.
+        args:
+            file_path, path to TOML file.
+        returns:
+            message, message within TOML file.
+        """
         try:
             self.da.contracts = []
             self.env.reset(self.market_name)
@@ -95,7 +132,11 @@ class MarketSim():
         return message
     
     def load_config2(self, file_path):
-        """Load configuration from the specified TOML file."""
+        """
+        Loads configuration from the specified TOML file without print statements.
+        args:
+            file_path, path to TOML file.
+        """
         self.da.contracts = []
         self.env.reset(self.market_name)
 
@@ -123,7 +164,13 @@ class MarketSim():
 
     def calc_efficiency(self, trader_list, max_surplus):
         """
-        Calculates efficiency from actual da trades
+        Calculates efficiency from actual Double Auction trades
+        args:
+            trader_list, list of traders (both buyers and sellers).
+            max_surplus, maximum amount of surplus.
+        returns:
+            actual_surplus, actual surplus for the simulation
+            efficiency, how much of maximum surplus was captured by actual surplus
         """
           
         buyer_surplus = 0
@@ -160,15 +207,17 @@ class MarketSim():
 
     def sim_period(self, num_rounds):
         """
-        Simulates a period of trading lasting num_rounds
+        Simulates a period of trading lasting num_rounds.
+        args:
+            num_rounds, number of rounds for simulation period.
         """
-        # Register buyers and sellers
+        # Registers buyers and sellers
         for buyer in self.env.buyers:
             self.da.register(buyer)
         for seller in self.env.sellers:
             self.da.register(seller)
 
-        # run simulation
+        # Runs simulation
         traders = []
         traders.extend(self.env.buyers)
         traders.extend(self.env.sellers)
@@ -197,13 +246,25 @@ class MarketSim():
         print(f"actual surplus = {actual_surplus}, efficiency = {efficiency}")
 
     def sim_period_silent(self, num_rounds):
-        # Register buyers and sellers
+        """
+        Simulates a period of trading lasting num_rounds without print statements.
+        args:
+            num_rounds, number of rounds for simulation period.
+        returns:
+            actual_surplus, actual surplus for the simulation
+            efficiency, how much of maximum surplus was captured by actual surplus
+            eq_units, the equiblirum number of units
+            eq_price_low, the low equilibrium price
+            eq_price_high, the high equilibirum price
+            individual_surplus, a dictionary of individual traders and their respective surpluses.
+        """
+        # Registers buyers and sellers
         for buyer in self.env.buyers:
             self.da.register(buyer)
         for seller in self.env.sellers:
             self.da.register(seller)
 
-        # run simulation
+        # Runs simulation
         traders = []
         traders.extend(self.env.buyers)
         traders.extend(self.env.sellers)
@@ -227,6 +288,13 @@ class MarketSim():
         return actual_surplus, efficiency, eq_units, eq_price_low, eq_price_high, individual_surplus
 
     def sim_trader_surplus(self, trader_list):
+        """
+        Calculates and stores individual surpluses for each buyer and seller.
+        args:
+            trader_list, list of traders (both buyers and sellers).
+        returns:
+            individual_surplus, a dictionary of individual traders and their respective surpluses.
+        """
         # dictionary to store individual surpluses
         individual_surplus = {}
 

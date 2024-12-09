@@ -263,6 +263,60 @@ class PS_Buyer:
             self.contracts.append(price)
             self.values.current_unit += 1
 
+class Skeleton_Buyer:
+    def __init__(self, name, reservation_values):
+        self.name = name
+        self.type = 'B'
+        self.values = ReservationValues(name, reservation_values)
+        self.prices = []
+        self.contracts = []
+
+    def __repr__(self):
+        return f"{self.type}--{self.name} {self.values.reservation_values} current unit = {self.values.current_unit}"
+    
+    def bid(self, standing_bid, standing_ask, num_round, total_rounds):
+        try:
+            next_token = self.values.reservation_values[self.values.current_unit + 1]
+        except IndexError:
+            next_token = self.values.current
+
+        if self.values.current == None:
+            return None
+
+        alpha = 0.25 + 0.1 * rnd.uniform(0,1)
+        if standing_bid:
+            if standing_ask:
+                most = min(standing_ask, next_token - 1)
+                if most <= standing_bid:
+                    return None
+                else:
+                    return self.name, "bid", (1 - alpha) * (standing_bid + 1) + alpha * most
+            else:
+                most = next_token - 1
+                if most <= standing_bid:
+                    return None
+                else:
+                    return self.name, "bid", (1 - alpha) * (standing_bid + 1) + alpha * most
+        else:
+            if standing_ask:
+                most = min(standing_ask, self.values.reservation_values[-1] - 1)
+                return self.name, "bid", most - (alpha * (self.values.reservation_values[0] - self.values.reservation_values[-1]))
+            else:
+                most = self.values.reservation_values[-1] - 1
+                return self.name, "bid", most - (alpha * (self.values.reservation_values[0] - self.values.reservation_values[-1]))
+
+    def contract(self, price, your_contract):
+        """
+        Buyer becomes informed about contract prices from Double Auction.
+        Buyer must be registered with Double Auction to get price information.
+        If your_contract == True buyer learns they have a contract at price.
+        If your_contract == True buyer updates their current_unit.
+        """
+        self.prices.append(price)
+        if your_contract:
+            self.contracts.append(price)
+            self.values.current_unit += 1
+
 if __name__ == "__main__":
     print()
     print("Testing ReservationValues class")

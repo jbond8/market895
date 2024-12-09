@@ -18,12 +18,25 @@ class MarketEnvironment:
     supply = []
 
     def add_buyer(self, buyer):
+        """
+        Appends buyer to list of buyers.
+        args:
+            buyer, the buyer to be appended
+        """
         self.buyers.append(buyer)
 
     def add_seller(self, seller):
+        """
+        Appends seller to list of sellers.
+        args:
+            seller, the seller to be appended
+        """
         self.sellers.append(seller)
 
     def reset(self, name):
+        """
+        Resets lists of buyers, sellers, demand, and supply.
+        """
         self.buyers = []
         self.sellers = []
         self.demand = []
@@ -32,9 +45,13 @@ class MarketEnvironment:
 
     def build_buyer(self, name, trader_type, units = 3, low = 10, high = 200):
         """
-        Returns a sorted list of reservation values between 
-        low and high from a Uniform distribution.
-        units = number of reservation values to be generated.
+        Returns a sorted list of reservation values between low and high from a Uniform distribution.
+        args:
+            name, name of buyer.
+            trader_type, type of bidding strategy.
+            num_units, number of reservation values to be generated.
+            low_v, lowest possible valuation.
+            high_v, highest possible valuation
         """
         if trader_type == 'Zero Intelligence':
             new_buyer = buyer.ZI_Buyer(name, [0])
@@ -44,15 +61,21 @@ class MarketEnvironment:
             new_buyer = buyer.Ringuette_Buyer(name, [0])
         elif trader_type == "Persistent Shout":
             new_buyer = buyer.PS_Buyer(name, [0])
+        elif trader_type == "Skeleton":
+            new_buyer = buyer.Skeleton_Buyer(name, [0])
         new_buyer.reservation_values = \
             new_buyer.values.build_reservation_values(units, low, high)
         self.add_buyer(new_buyer)
 
     def build_seller(self, name, trader_type, units = 3, low = 10, high = 200):
         """
-        Returns a sorted list of unit_costs between 
-        low and high from a Uniform distribution.
-        units = number of unit_costs to be generated.
+        Returns a sorted list of unit_costs between low and high from a Uniform distribution.
+        args:
+            name, name of seller.
+            trader_type, type of selling strategy.
+            num_units, number of unit cost values to be generated.
+            low_c, lowest possible cost.
+            high_c, highest possible cost
         """
         if trader_type == 'Zero Intelligence':
             new_seller = seller.ZI_Seller(name, [0])
@@ -62,10 +85,15 @@ class MarketEnvironment:
             new_seller = seller.Ringuette_Seller(name, [0])
         elif trader_type == "Persistent Shout":
             new_seller = seller.PS_Seller(name, [0])
+        elif trader_type == "Skeleton":
+            new_seller = seller.Skeleton_Seller(name, [0])
         new_seller.unit_costs = new_seller.costs.build_unit_costs(units, low, high)
         self.add_seller(new_seller)
             
     def make_demand(self):
+        """
+        Creates a demand curve for simulation.
+        """
         temp_demand = []
         for buyer in self.buyers:
             name = buyer.name
@@ -75,6 +103,9 @@ class MarketEnvironment:
         self.demand = sorted(temp_demand, key=itemgetter(1), reverse=True)
 
     def make_supply(self):
+        """
+        Creates a supply curve for simulation.
+        """
         temp_supply = []
         for seller in self.sellers:
             name = seller.name
@@ -84,6 +115,9 @@ class MarketEnvironment:
         self.supply = sorted(temp_supply, key=itemgetter(1))
     
     def show_participants(self):
+        """
+        Neatly prints the market particpants (both buyers and sellers).
+        """
         print ("Market Participants")
         print ("-------------------")
         print ("BUYERS")
@@ -98,6 +132,10 @@ class MarketEnvironment:
         print ("")
 
     def list_supply_demand(self):
+        """
+        Neatly prints the supply and demand curves for the simulation.
+        """
+
         dem = self.demand
         sup = self.supply
         k = len(dem) - len(sup)
@@ -125,7 +163,7 @@ class MarketEnvironment:
 
     def plot_supply_demand(self):
         """
-        First define supply and demand curves
+        Plots supply and demand curves
         """
         # For now prices = []
         prices = []
@@ -149,9 +187,6 @@ class MarketEnvironment:
         for id, cost in sup:               
             supply_costs.append(cost)     
 
-        """
-        Set up plot
-        """
         plt.figure(figsize=(6, 4))  # Set plot dimensions
         ax = plt.subplot(111)
         ax.spines["top"].set_visible(False)
@@ -163,9 +198,6 @@ class MarketEnvironment:
         plt.yticks(fontsize=14)
         plt.xticks(fontsize=14)
 
-        """
-        Made a bunch of small changes here
-        """
         plt.step(dunits, demand_values, label='Demand')
         plt.step(sunits, supply_costs, label='Supply')
 
@@ -188,11 +220,8 @@ class MarketEnvironment:
         plt.show()
 
     def calc_equilibrium(self):
-        """ Calculate Competitive Equilibrium information:
-            eq_price_high
-            eq_price_low
-            eq_units
-            max_surplus
+        """
+        Finds competitive equilibirum price (low and high), equilibrium units, and maximum surplus
         """
 
         self.max_surplus = 0
@@ -222,8 +251,10 @@ class MarketEnvironment:
         else:
             print("No Equilibrium")
 
-
     def show_equilibrium(self):
+        """
+        Neatly prints out calculated equilbirum price (low and high), equilibrium units, and maximum surplus.
+        """
         #  Print out market equilibrium numbers
         print()
         print(f"When {self.name} is in equilibrium we have:")

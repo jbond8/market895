@@ -9,7 +9,7 @@ type = "B"
 num_units = 3
 min_value = 200
 max_value = 400
-trader_type = "Zero Intelligence"
+trader_type = "Persistent Shout"
 
 [S1]
 name = "S1"
@@ -17,7 +17,7 @@ type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Zero Intelligence"
+trader_type = "Persistent Shout"
 
 [B2]
 name = "B2"
@@ -25,7 +25,7 @@ type = "B"
 num_units = 3
 min_value = 200
 max_value = 400
-trader_type = "Kaplan"
+trader_type = "Persistent Shout"
 
 [S2]
 name = "S2"
@@ -33,4 +33,4 @@ type = "S"
 num_units = 3
 min_value = 100
 max_value = 300
-trader_type = "Zero Intelligence"
+trader_type = "Persistent Shout"

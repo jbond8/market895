@@ -8,6 +8,14 @@ import matplotlib.pyplot as plt
 
 @dataclass
 class Tournament:
+    """
+    Sets up Tournament class to conduct tournament simulations.
+    args:
+        tournament_name, name of tournament.
+        tournament_rounds, number of tournament rounds.
+        sim_period, number of rounds within simulation period.
+        file_path, path to TOML file.
+    """
     def __init__(self, tournament_name, tournament_rounds, sim_period, file_path):
         self.tournament_name = tournament_name
         self.tournament_rounds= tournament_rounds
@@ -15,6 +23,11 @@ class Tournament:
         self.file_path = file_path
 
     def run_tournament(self):
+        """
+        Runs a tournament with the number of rounds determined by user in calling the Tournament Class.
+        returns:
+            tournament results
+        """
         sims = []
         for sim_num in range(self.tournament_rounds):
             sim = msim.MarketSim(self.tournament_name, f"Market {sim_num}")
@@ -25,6 +38,9 @@ class Tournament:
         return sims
         
     def eval_tournament(self):
+        """
+        Runs and evaluates tournament results, including a neat printing of useful results and plots.
+        """
         results = self.run_tournament()
         act_sur = []
         eff = []

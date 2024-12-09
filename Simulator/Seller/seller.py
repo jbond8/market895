@@ -257,6 +257,60 @@ class PS_Seller:
             self.contracts.append(price)
             self.costs.current_unit += 1
 
+class Skeleton_Seller:
+    def __init__(self, name, unit_costs):
+        self.name = name
+        self.type = 'S'
+        self.costs = UnitCosts(name, unit_costs)
+        self.prices = []
+        self.contracts = []
+
+    def __repr__(self):
+        return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
+    
+    def ask(self, standing_bid, standing_ask, num_round, total_rounds):
+        try:
+            next_token = self.costs.unit_costs[self.costs.current_unit + 1]
+        except IndexError:
+            next_token = self.costs.current
+
+        if self.costs.current == None:
+            return None
+
+        alpha = 0.25 + 0.1 * rnd.uniform(0,1)
+        if standing_ask:
+            if standing_bid:
+                most = max(standing_bid, next_token + 1)
+                if most >= standing_ask:
+                    return None
+                else:
+                    return self.name, "ask", (1 - alpha) * (standing_ask - 1) + alpha * most
+            else:
+                most = next_token + 1
+                if most >= standing_bid:
+                    return None
+                else:
+                    return self.name, "ask", (1 - alpha) * (standing_ask - 1) + alpha * most
+        else:
+            if standing_bid:
+                most = max(standing_bid, self.costs.unit_costs[0] + 1)
+                return self.name, "ask", most + (alpha * (self.costs.unit_costs[-1] - self.costs.unit_costs[0]))
+            else:
+                most = self.costs.unit_costs[0] + 1
+                return self.name, "ask", most + (alpha * (self.costs.unit_costs[-1] - self.costs.unit_costs[0]))
+
+    def contract(self, price, your_contract):
+        """
+        Buyer becomes informed about contract prices from Double Auction.
+        Buyer must be registered with Double Auction to get price information.
+        If your_contract == True buyer learns they have a contract at price.
+        If your_contract == True buyer updates their current_unit.
+        """
+        self.prices.append(price)
+        if your_contract:
+            self.contracts.append(price)
+            self.costs.current_unit += 1
+
 if __name__ == "__main__":
     print()
     print("Testing UnitCosts class")

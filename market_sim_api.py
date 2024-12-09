@@ -8,6 +8,9 @@ import toml
 
 class MktSimGui:
     def __init__(self, top_window, simulator):
+        """
+        Sets up the TKinter GUI.
+        """
         self.top_window = top_window
         self.top_window.title("Spot Market Simulator")
         self.simulator = simulator
@@ -15,11 +18,11 @@ class MktSimGui:
         self.data_file = ""
         self.sim = sim.MarketSim("orange market")
 
-        # main container
+        # Main Container
         self.main_frame = tk.Frame(self.top_window)
         self.main_frame.grid(row=0, column=0, sticky="nsew")
 
-        # radio button for trader selection
+        # Radio Button for selection between using a config file and drop-down menu
         self.selection = tk.StringVar(value="config")
         radio_frame = tk.LabelFrame(self.main_frame, text="Radio Button")
         radio_frame.grid(row=1, column=0, pady=5, sticky="ew")
@@ -42,11 +45,11 @@ class MktSimGui:
         )
         self.self_select_radio.grid(row=0, column=1, sticky="w")
 
-        # frames for config and trader selection
+        # Frames for config file and drop-down menu
         self.config_frame = tk.LabelFrame(self.main_frame, text="Load Configuration File")
         self.trader_frame = tk.LabelFrame(self.main_frame, text="Select Traders")
 
-        # number of traders input
+        # Number of traders entry
         trader_num_label = tk.Label(self.trader_frame, text="Number of Traders:")
         trader_num_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
@@ -56,7 +59,7 @@ class MktSimGui:
         self.trader_num_entry = tk.Entry(self.trader_frame, textvariable=self.trader_num, width=10)
         self.trader_num_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
-        # placeholder for trader rows
+        # Placeholder for trader rows
         self.trader_rows_frame = tk.Frame(self.trader_frame)
         self.trader_rows_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
 
@@ -67,13 +70,13 @@ class MktSimGui:
         self.message_label = tk.Label(self.config_frame, text="", width=16)
         self.message_label.grid(row=0, column=1, padx=5, pady=5)
 
-        # simulation frame
+        # Simulation Frame
         sim_frame = tk.LabelFrame(self.main_frame, text="Conduct Simulation")
         sim_frame.grid(row=4, column=0, pady=5, sticky="ew")
         self.run_button = tk.Button(sim_frame, text="Run Simulation", command=self.run_sim)
         self.run_button.grid(row=0, column=0, sticky="ew")
 
-        # tournament frame
+        # Tournament Frame
         tournament_frame = tk.LabelFrame(self.main_frame, text="Conduct Tournament")
         tournament_frame.grid(row=5, column=0, pady=5, sticky="ew")
 
@@ -87,16 +90,19 @@ class MktSimGui:
         self.run_tournament_button = tk.Button(tournament_frame, text="Run Tournament", command=self.run_tournament)
         self.run_tournament_button.grid(row=1, column=0, columnspan=2, pady=5, sticky="ew")
 
-        # quit button
+        # Quit Button
         self.quit_button = tk.Button(self.main_frame, text="Quit", command=self.top_window.quit)
         self.quit_button.grid(row=6, column=0, pady=10, sticky="ew")
 
         self.traders = []
 
-        # show initial frame
+        # Toggle Frames
         self.toggle_frames()
 
     def toggle_frames(self):
+        """
+        Toggles between the frames of the config file selection and drop-down menu for trader strategies.
+        """
         if self.selection.get() == "config":
             self.config_frame.grid(row=2, column=0, pady=5, sticky="ew")
             self.trader_frame.grid_forget()
@@ -105,19 +111,22 @@ class MktSimGui:
             self.config_frame.grid_forget()
 
     def update_traders(self):
-        # clear existing rows
+        """
+        Updates the number of traders selected by user-input.
+        """
+        # Clears existing rows
         for widget in self.trader_rows_frame.winfo_children():
             widget.destroy()
         self.traders.clear()
 
-        # add new rows for buyers and sellers
+        # Adds new rows for buyers and sellers
         try:
             for i in range(self.trader_num.get()):
                 buyer_label = tk.Label(self.trader_rows_frame, text=f"Buyer {i + 1}")
                 buyer_label.grid(row=i, column=0, pady=5, sticky="ew")
 
                 buyer_strat = ttk.Combobox(self.trader_rows_frame)
-                buyer_strat["values"] = ["Zero Intelligence", "Kaplan", "Ringuette", "Persistent Shout"]
+                buyer_strat["values"] = ["Zero Intelligence", "Kaplan", "Ringuette", "Persistent Shout", "Skeleton"]
                 buyer_strat.state(["readonly"])
                 buyer_strat.grid(row=i, column=1, pady=5, sticky="ew")
                 self.traders.append(("B", f"B{i + 1}", buyer_strat))
@@ -126,7 +135,7 @@ class MktSimGui:
                 seller_label.grid(row=i, column=2, pady=5, sticky="ew")
 
                 seller_strat = ttk.Combobox(self.trader_rows_frame)
-                seller_strat["values"] = ["Zero Intelligence", "Kaplan", "Ringuette", "Persistent Shout"]
+                seller_strat["values"] = ["Zero Intelligence", "Kaplan", "Ringuette", "Persistent Shout", "Skeleton"]
                 seller_strat.state(["readonly"])
                 seller_strat.grid(row=i, column=3, pady=5, sticky="ew")
                 self.traders.append(("S", f"S{i + 1}", seller_strat))
@@ -142,7 +151,9 @@ class MktSimGui:
 
 
     def load_config_file(self):
-        """Open a file dialog to select a configuration file."""
+        """
+        Opens a file dialog to select a configuration file.
+        """
         self.sim.reset_market()
         
         self.file_path = filedialog.askopenfilename(title="Select a Config File", filetypes=[("TOML files", "*.toml")])
@@ -165,13 +176,16 @@ class MktSimGui:
                 self.data_text.insert("1.0",self.data_file)
 
     def run_sim(self):
-        """Runs one period Simulation"""
+        """
+        Runs one period Simulation
+        """
         self.sim.calc_market()
         self.sim.show_market()
         self.sim.sim_period(100)
 
     def run_tournament(self):
         """
+        Runs a tournament where the number or rounds is determined by user-input.
         """
         rounds = self.tournament_rounds.get()
         print(f"File Path: {self.file_path}")
@@ -180,7 +194,10 @@ class MktSimGui:
         sim.eval_tournament()
 
     def save_to_toml(self):
-        # collect configuration data
+        """
+        Saves trader drop-down menu selection to a .TOML file and promptly opens up a file dialog to select a configuration file.
+        """
+        # Collects configuration data
         config = {
             "title": "MarketSim Config",
             "message": "File Loaded",

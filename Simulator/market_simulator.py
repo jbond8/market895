@@ -7,8 +7,8 @@ import random as rnd
 
 import Buyer.buyer as buyer
 import Seller.seller as seller
-import Institution.double_auction as institution
-import Environment.spot_market_environment as environment
+import double_auction as institution
+import spot_market_environment as environment
 
 class MarketSim():
     """ run market Simulations """

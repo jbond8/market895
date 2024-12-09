@@ -1,6 +1,6 @@
 import scipy.ndimage
 import scipy.stats
-import Simulator.market_simulator as msim
+import market_simulator_v2 as msim
 from dataclasses import dataclass
 import scipy
 import numpy as np
@@ -8,16 +8,18 @@ import matplotlib.pyplot as plt
 
 @dataclass
 class Tournament:
-    def __init__(self, tournament_name, tournament_rounds, sim_period):
+    def __init__(self, tournament_name, tournament_rounds, sim_period, file_path):
         self.tournament_name = tournament_name
         self.tournament_rounds= tournament_rounds
         self.sim_period = sim_period
+        self.file_path = file_path
 
     def run_tournament(self):
         sims = []
         for sim_num in range(self.tournament_rounds):
             sim = msim.MarketSim(self.tournament_name, f"Market {sim_num}")
-            sim.build_market()
+            sim.load_config2(self.file_path)
+            sim.calc_market()
             sims.append(sim.sim_period_silent(self.sim_period))
 
         return sims

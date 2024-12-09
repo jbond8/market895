@@ -16,7 +16,7 @@ class UnitCosts:
         Check if list is non-empty and unit_costs are non-negative integers
         Sort list in ascending order to enforce increasing marginal cost
         """ 
-        assert len(self.unit_costs) > 0, f"For {owners_name} no reservation values were given"
+        assert len(self.unit_costs) > 0, f"For {self.owners_name} no reservation values were given"
         assert self.check_costs(), f"For {self.owners_name} At least one value is not an integer, or is negative"
         self.unit_costs.sort()
     
@@ -51,7 +51,7 @@ class UnitCosts:
         except IndexError:
             return None
 
-class Seller:
+class ZI_Seller:
     def __init__(self, name, unit_costs):
         self.name = name
         self.type = 'S'
@@ -62,8 +62,7 @@ class Seller:
     def __repr__(self):
         return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
 
-
-    def ask(self, standing_ask):
+    def ask(self, standing_bid, standing_ask, round, num_rounds):
         """ make a random ask between the current unit cost and the standing_ask
             ask = (name, "ask", amount)"""
 
@@ -85,6 +84,58 @@ class Seller:
             self.contracts.append(price)
             self.costs.current_unit += 1
 
+class Kaplan:
+    """
+    A Buyer who can bid in a Double Auction Spot Market.
+    Modeled after Kaplan's bidding strategy in Rust et al. (1994)
+    """
+    def __init__(self, name, unit_costs):
+        self.name = name
+        self.type = 'S'
+        self.costs = UnitCosts(name, unit_costs)
+        self.prices = []
+        self.contracts = []
+
+    def __repr__(self):
+        return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
+        
+    def bid(self, standing_bid, standing_ask, num_round, total_rounds):
+        """
+        Kaplan's bidding strategy as outline in Rust et al. (1994) p. 73
+        """
+        if self.costs.current == None:
+            return None
+        if standing_ask:
+            if standing_bid:
+                most = max(standing_bid, self.costs.current)
+                if most > standing_bid:
+                    if standing_ask <= 999 and ((self.values.current - standing_bid)/self.values.current) > 0.02 and (standing_ask - standing_bid) < (0.1 * standing_ask):
+                        return self.name, "bid", min(standing_ask, most)
+                    elif standing_ask <= 0:
+                        return self.name, "bid", min(standing_ask, most)
+                    elif (1 - (num_round / total_rounds)) <= 0.8:
+                        return self.name, "bid", min(standing_ask, most)
+                    else:
+                        return None
+                else:
+                    return None
+            else:
+                most = self.values.current
+                if most > standing_bid:
+                    if standing_ask <= 999 and ((self.values.current - standing_bid)/self.values.current) > 0.02 and (standing_ask - standing_bid) < (0.1 * standing_ask):
+                        return self.name, "bid", min(standing_ask, most)
+                    elif standing_ask <= 0:
+                        return self.name, "bid", min(standing_ask, most)
+                    elif (1 - (num_round / total_rounds)) <= 0.8:
+                        return self.name, "bid", min(standing_ask, most)
+                    else:
+                        return None
+                else:
+                    return None
+        else:
+            return self.name, "bid", 1
+
+
 if __name__ == "__main__":
     print()
     print("Testing UnitCosts class")
@@ -101,7 +152,7 @@ if __name__ == "__main__":
 
     print()
     print("Testing Seller class")
-    seller_1 = Seller("Seller 1", [100, 50, 10])
+    seller_1 = ZI_Seller("Seller 1", [100, 50, 10])
     print(seller_1)
     seller_1.contract(70, False)
     ask = seller_1.ask(60)

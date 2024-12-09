@@ -7,10 +7,8 @@ from operator import itemgetter
 import random as rnd
 import toml
 
-import Buyer.buyer as buyer
-import Seller.seller as seller
-import Institution.double_auction as institution
-import Environment.spot_market_environment as environment
+import double_auction as institution
+import spot_market_environment as environment
 
 class MarketSim():
     """ run market Simulations """
@@ -22,11 +20,11 @@ class MarketSim():
         self.env = environment.MarketEnvironment(self.market_name)
         self.da = institution.DoubleAuction(self.market_name)
     
-    def build_a_buyer(self, name, num_units, low_v, high_v):
-        self.env.build_buyer(name, num_units, low_v, high_v)
+    def build_a_buyer(self, name, trader_type, num_units, low_v, high_v):
+        self.env.build_buyer(name, trader_type, num_units, low_v, high_v)
 
-    def build_a_seller(self, name, num_units, low_c, high_c):
-        self.env.build_seller(name, num_units, low_c, high_c)
+    def build_a_seller(self, name, trader_type, num_units, low_c, high_c):
+        self.env.build_seller(name, trader_type, num_units, low_c, high_c)
 
     def reset_market(self):
         self.env.reset(self.market_name)
@@ -63,7 +61,10 @@ class MarketSim():
     def load_config(self, file_path):
         """Load configuration from the specified TOML file."""
         try:
-            self.reset_market
+            print(f"self: {self}")
+            self.da.contracts = []
+            self.env.reset(self.market_name)
+
             self.config = toml.load(file_path)
             
             # Update the UI with the loaded configuration
@@ -78,7 +79,8 @@ class MarketSim():
                 units = self.config[buyer_id]['num_units']
                 min_value = self.config[buyer_id]['min_value']
                 max_value = self.config[buyer_id]['max_value']
-                self.build_a_buyer(name, units, min_value, max_value)
+                trader_type = self.config[buyer_id]['trader_type']
+                self.build_a_buyer(name, trader_type, units, min_value, max_value)
             for k in range(self.num_sellers):
                 seller_id = f"S{str(k+1)}"
                 print(self.config[seller_id])
@@ -86,12 +88,39 @@ class MarketSim():
                 units = self.config[buyer_id]['num_units']
                 min_value = self.config[seller_id]['min_value']
                 max_value = self.config[seller_id]['max_value']
-                self.build_a_seller(name, units, min_value, max_value)
+                trader_type = self.config[seller_id]['trader_type']
+                self.build_a_seller(name, trader_type, units, min_value, max_value)
 
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load config file: {e}")
         return message
+    
+    def load_config2(self, file_path):
+        """Load configuration from the specified TOML file."""
+        self.da.contracts = []
+        self.env.reset(self.market_name)
 
+        self.config = toml.load(file_path)
+        
+        # Update the UI with the loaded configuration
+        self.num_buyers = self.config['num_buyers']
+        self.num_sellers = self.config['num_sellers']
+        for k in range(self.num_buyers):
+            buyer_id = f"B{str(k+1)}"
+            name = self.config[buyer_id]['name']
+            units = self.config[buyer_id]['num_units']
+            min_value = self.config[buyer_id]['min_value']
+            max_value = self.config[buyer_id]['max_value']
+            trader_type = self.config[buyer_id]['trader_type']
+            self.build_a_buyer(name, trader_type, units, min_value, max_value)
+        for k in range(self.num_sellers):
+            seller_id = f"S{str(k+1)}"
+            name = self.config[seller_id]['name']
+            units = self.config[buyer_id]['num_units']
+            min_value = self.config[seller_id]['min_value']
+            max_value = self.config[seller_id]['max_value']
+            trader_type = self.config[seller_id]['trader_type']
+            self.build_a_seller(name, trader_type, units, min_value, max_value)
 
     def calc_efficiency(self, trader_list, max_surplus):
         """
@@ -134,7 +163,6 @@ class MarketSim():
         """
         Simulates a period of trading lasting num_rounds
         """
-       
         # Register buyers and sellers
         for buyer in self.env.buyers:
             self.da.register(buyer)
@@ -151,7 +179,7 @@ class MarketSim():
             standing_bid = self.da.book.standing['bid']
             standing_ask = self.da.book.standing['ask']
             if trader.type == "B": 
-                bid = trader.bid(standing_bid)
+                bid = trader.bid(standing_bid, standing_ask, round, num_rounds)
                 #print(f"standing bid = {standing_bid}, bid = {bid}")
                 if bid != None: self.da.order(bid)
             if trader.type == "S": 
@@ -167,7 +195,36 @@ class MarketSim():
         print()
         eq_units, eq_price_low, eq_price_high, max_surplus = self.env.get_equilibrium()
         actual_surplus, efficiency = self.calc_efficiency(traders, max_surplus)
-        print(f"actual surplus = {actual_surplus}, efficiency = {efficiency}") 
+        print(f"actual surplus = {actual_surplus}, efficiency = {efficiency}")
+
+    def sim_period_silent(self, num_rounds):
+        # Register buyers and sellers
+        for buyer in self.env.buyers:
+            self.da.register(buyer)
+        for seller in self.env.sellers:
+            self.da.register(seller)
+
+        # run simulation
+        traders = []
+        traders.extend(self.env.buyers)
+        traders.extend(self.env.sellers)
+
+        for round in range(0, num_rounds):
+            trader = rnd.choice(traders)
+            standing_bid = self.da.book.standing['bid']
+            standing_ask = self.da.book.standing['ask']
+            if trader.type == "B": 
+                bid = trader.bid(standing_bid, standing_ask, round, num_rounds)
+                #print(f"standing bid = {standing_bid}, bid = {bid}")
+                if bid != None: self.da.order(bid)
+            if trader.type == "S": 
+                ask = trader.ask(standing_bid, standing_ask, round, num_rounds)
+                #print(f"standing ask = {standing_ask}, ask = {ask}")
+                if ask != None: self.da.order(ask)
+        
+        eq_units, eq_price_low, eq_price_high, max_surplus = self.env.get_equilibrium()
+        actual_surplus, efficiency = self.calc_efficiency(traders, max_surplus)
+        return actual_surplus, efficiency, eq_units, eq_price_low, eq_price_high
               
 if __name__ == "__main__":
     sim = MarketSim()

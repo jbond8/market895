@@ -5,8 +5,8 @@ from typing import List
 from operator import itemgetter
 import random as rnd
 
-import Buyer.buyer as buyer
-import Seller.seller as seller
+import Simulator.Buyer.buyer as buyer
+import Simulator.Seller.seller as seller
 
 
 @dataclass
@@ -30,24 +30,30 @@ class MarketEnvironment:
         self.supply = []
         self.name = name
 
-    def build_buyer(self, name, units = 3, low = 10, high = 200):
+    def build_buyer(self, name, trader_type, units = 3, low = 10, high = 200):
         """
         Returns a sorted list of reservation values between 
         low and high from a Uniform distribution.
         units = number of reservation values to be generated.
         """
-        new_buyer = buyer.ZI_Buyer(name, [0])
+        if trader_type == 'Zero':
+            new_buyer = buyer.ZI_Buyer(name, [0])
+        elif trader_type == 'Kaplan':
+            new_buyer = buyer.Kaplan(name, [0])
         new_buyer.reservation_values = \
             new_buyer.values.build_reservation_values(units, low, high)
         self.add_buyer(new_buyer)
 
-    def build_seller(self, name, units = 3, low = 10, high = 200):
+    def build_seller(self, name, trader_type, units = 3, low = 10, high = 200):
         """
         Returns a sorted list of unit_costs between 
         low and high from a Uniform distribution.
         units = number of unit_costs to be generated.
         """
-        new_seller = seller.Seller(name, [0])
+        if trader_type == 'Zero':
+            new_seller = seller.ZI_Seller(name, [0])
+        elif trader_type == 'Kaplan':
+            new_seller = seller.Kaplan(name, [0])
         new_seller.unit_costs = new_seller.costs.build_unit_costs(units, low, high)
         self.add_seller(new_seller)
             

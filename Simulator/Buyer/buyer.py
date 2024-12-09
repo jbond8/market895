@@ -109,6 +109,8 @@ class Kaplan:
         """
         Kaplan's bidding strategy as outline in Rust et al. (1994) p. 73
         """
+        if self.values.current == None:
+            return None
         if standing_bid:
             if standing_ask:
                 most = min(standing_ask, self.values.current)

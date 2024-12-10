@@ -100,9 +100,6 @@ class Kaplan_Seller:
         return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
         
     def ask(self, standing_bid, standing_ask, num_round, total_rounds):
-        """
-        Kaplan's bidding strategy as outline in Rust et al. (1994) p. 73
-        """
         try:
             next_token = self.costs.unit_costs[self.costs.current_unit + 1]
         except IndexError:
@@ -168,8 +165,6 @@ class Ringuette_Seller:
         return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
         
     def ask(self, standing_bid, standing_ask, num_round, total_rounds):
-        """ 
-        """
         try:
             next_token = self.costs.unit_costs[self.costs.current_unit + 1]
         except IndexError:
@@ -219,8 +214,6 @@ class PS_Seller:
         return f"{self.type}--{self.name} {self.costs.unit_costs} current unit = {self.costs.current_unit}"
     
     def ask(self, standing_bid, standing_ask, num_round, total_rounds):
-        """ 
-        """
         r_1 = rnd.uniform(0,0.2)
         r_2 = rnd.uniform(0,0.2)
         gamma = 0.3

@@ -108,9 +108,6 @@ class Kaplan_Buyer:
         return f"{self.type}--{self.name} {self.values.reservation_values} current unit = {self.values.current_unit}"
         
     def bid(self, standing_bid, standing_ask, num_round, total_rounds):
-        """
-        Kaplan's bidding strategy as outline in Rust et al. (1994) p. 73
-        """
         try:
             next_token = self.values.reservation_values[self.values.current_unit + 1]
         except IndexError:
@@ -176,8 +173,6 @@ class Ringuette_Buyer:
         return f"{self.type}--{self.name} {self.values.reservation_values} current unit = {self.values.current_unit}"
     
     def bid(self, standing_bid, standing_ask, num_round, total_rounds):
-        """ 
-        """
         try:
             next_token = self.values.reservation_values[self.values.current_unit + 1]
         except IndexError:
@@ -227,8 +222,6 @@ class PS_Buyer:
         return f"{self.type}--{self.name} {self.values.reservation_values} current unit = {self.values.current_unit}"
     
     def bid(self, standing_bid, standing_ask, num_round, total_rounds):
-        """ 
-        """
         try:
             next_token = self.values.reservation_values[self.values.current_unit + 1]
         except IndexError:

@@ -36,3 +36,5 @@ There is a quit button for the user to exit the program.
 Simply run: `python market_sim.api.py`
 
 You can also access the `ECON895_ProjectII_Notebook.ipynb` to see my answers to the project's specific questions and run the GUI from there.
+
+![alt text](img\Screenshot 2024-12-09 202423.png)

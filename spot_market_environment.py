@@ -8,7 +8,6 @@ import random as rnd
 import Simulator.Buyer.buyer as buyer
 import Simulator.Seller.seller as seller
 
-
 @dataclass
 class MarketEnvironment:
     name: str

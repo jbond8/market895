@@ -2,15 +2,19 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import market_simulator_v2 as sim
 import tournament as tourn
+import double_auction as da
 from pathlib import Path
 import os
 import toml
+import csv
 
 class MktSimGui:
     def __init__(self, top_window, simulator):
         """
         Sets up the TKinter GUI.
         """
+        self.padx = 3
+        self.pady = 8
         self.top_window = top_window
         self.top_window.title("Spot Market Simulator")
         self.simulator = simulator
@@ -20,12 +24,12 @@ class MktSimGui:
 
         # Main Container
         self.main_frame = tk.Frame(self.top_window)
-        self.main_frame.grid(row=0, column=0, sticky="nsew")
+        self.main_frame.grid(row=0, column=0, sticky="nsew", padx=self.padx, pady=self.pady)
 
         # Radio Button for selection between using a config file and drop-down menu
         self.selection = tk.StringVar(value="config")
         radio_frame = tk.LabelFrame(self.main_frame, text="Radio Button")
-        radio_frame.grid(row=1, column=0, pady=5, sticky="ew")
+        radio_frame.grid(row=1, column=0, padx=self.padx, pady=self.pady, sticky="ew")
 
         self.config_radio = ttk.Radiobutton(
             radio_frame,
@@ -34,7 +38,7 @@ class MktSimGui:
             value="config",
             command=self.toggle_frames,
         )
-        self.config_radio.grid(row=0, column=0, sticky="w")
+        self.config_radio.grid(row=0, column=0, padx=self.padx, pady=self.pady, sticky="w")
 
         self.self_select_radio = ttk.Radiobutton(
             radio_frame,
@@ -43,7 +47,7 @@ class MktSimGui:
             value="self_select",
             command=self.toggle_frames,
         )
-        self.self_select_radio.grid(row=0, column=1, sticky="w")
+        self.self_select_radio.grid(row=0, column=1, padx=self.padx, pady=self.pady, sticky="w")
 
         # Frames for config file and drop-down menu
         self.config_frame = tk.LabelFrame(self.main_frame, text="Load Configuration File")
@@ -51,48 +55,48 @@ class MktSimGui:
 
         # Number of traders entry
         trader_num_label = tk.Label(self.trader_frame, text="Number of Traders:")
-        trader_num_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        trader_num_label.grid(row=0, column=0, padx=self.padx, pady=self.pady, sticky="w")
 
         self.trader_num = tk.IntVar(value=0)
         self.trader_num.trace("w", lambda *args: self.update_traders())
 
         self.trader_num_entry = tk.Entry(self.trader_frame, textvariable=self.trader_num, width=10)
-        self.trader_num_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        self.trader_num_entry.grid(row=0, column=1, padx=self.padx, pady=self.pady, sticky="w")
 
         # Placeholder for trader rows
         self.trader_rows_frame = tk.Frame(self.trader_frame)
-        self.trader_rows_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
+        self.trader_rows_frame.grid(row=1, column=0, columnspan=2, padx=self.padx, pady=self.pady, sticky="ew")
 
         self.file_path = None
         self.load_button = tk.Button(self.config_frame, text="Select File", command=self.load_config_file)
-        self.load_button.grid(row=0, column=0, sticky="ew")
+        self.load_button.grid(row=0, column=0, padx=self.padx, pady=self.pady, sticky="ew")
 
         self.message_label = tk.Label(self.config_frame, text="", width=16)
-        self.message_label.grid(row=0, column=1, padx=5, pady=5)
+        self.message_label.grid(row=0, column=1, padx=self.padx, pady=self.pady)
 
         # Simulation Frame
         sim_frame = tk.LabelFrame(self.main_frame, text="Conduct Simulation")
-        sim_frame.grid(row=4, column=0, pady=5, sticky="ew")
+        sim_frame.grid(row=4, column=0, padx=self.padx, pady=self.pady, sticky="ew")
         self.run_button = tk.Button(sim_frame, text="Run Simulation", command=self.run_sim)
-        self.run_button.grid(row=0, column=0, sticky="ew")
+        self.run_button.grid(row=0, column=0, padx=self.padx, pady=self.pady, sticky="ew")
 
         # Tournament Frame
         tournament_frame = tk.LabelFrame(self.main_frame, text="Conduct Tournament")
         tournament_frame.grid(row=5, column=0, pady=5, sticky="ew")
 
         label = tk.Label(tournament_frame, text="Tournament Rounds:")
-        label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+        label.grid(row=0, column=0, padx=self.padx, pady=self.pady, sticky="w")
 
         self.tournament_rounds = tk.IntVar(value=0)
         self.rounds_entry = tk.Entry(tournament_frame, textvariable=self.tournament_rounds, width=10)
-        self.rounds_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+        self.rounds_entry.grid(row=0, column=1, padx=self.padx, pady=self.pady, sticky="w")
 
         self.run_tournament_button = tk.Button(tournament_frame, text="Run Tournament", command=self.run_tournament)
-        self.run_tournament_button.grid(row=1, column=0, columnspan=2, pady=5, sticky="ew")
+        self.run_tournament_button.grid(row=1, column=0, padx=self.padx, pady=self.pady, sticky="ew")
 
         # Quit Button
         self.quit_button = tk.Button(self.main_frame, text="Quit", command=self.top_window.quit)
-        self.quit_button.grid(row=6, column=0, pady=10, sticky="ew")
+        self.quit_button.grid(row=6, column=0, padx=self.padx, pady=self.pady, sticky="ew")
 
         self.traders = []
 
@@ -195,9 +199,9 @@ class MktSimGui:
 
     def save_to_toml(self):
         """
-        Saves trader drop-down menu selection to a .TOML file and promptly opens up a file dialog to select a configuration file.
+        Saves trader drop-down menu selection to a .TOML file, allowing the user to specify the file name.
         """
-        # Collects configuration data
+        # collect configuration data
         config = {
             "title": "MarketSim Config",
             "message": "File Loaded",
@@ -216,13 +220,22 @@ class MktSimGui:
                 "trader_type": selected_strategy,
             }
 
-        # write to toml file
-        with open("custom_config.toml", "w") as toml_file:
+        # ask the user for a file name
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".toml",
+            filetypes=[("TOML files", "*.toml"), ("All files", "*.*")],
+            title="Save Config As"
+        )
+
+        if not file_path:  # if the user cancels the dialog
+            print("Save canceled.")
+            return
+
+        # write to the specified toml file
+        with open(file_path, "w") as toml_file:
             toml.dump(config, toml_file)
 
-        print("Config saved to trader_config.toml")
-
-        self.load_config_file()
+        print(f"config saved to {file_path}")
 
 if __name__ == "__main__":
     root = tk.Tk()

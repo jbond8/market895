@@ -207,7 +207,6 @@ class MarketSim():
         actual_surplus = buyer_surplus + seller_surplus
         efficiency = (actual_surplus/max_surplus)*100.0
         return actual_surplus, efficiency
-           
 
     def sim_period(self, num_rounds):
         """

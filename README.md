@@ -38,4 +38,4 @@ Simply run: `python market_sim.api.py`
 You can also access the `ECON895_ProjectII_Notebook.ipynb` to see my answers to the project's specific questions and run the GUI from there.
 
 Preview of GUI:
-![alt text](./img/Screenshot%202024-12-09%20202423.png)
+<img src="./img/Screenshot%202024-12-09%20202423.png" alt="alt text" width="500" />
